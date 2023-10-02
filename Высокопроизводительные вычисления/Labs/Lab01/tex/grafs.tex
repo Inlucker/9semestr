@@ -96,7 +96,7 @@
 	\caption{Задание 2 - Зависимость GFLOPS умножения матриц от количества процессов}
 \end{figure}
 
-%ЗАДАНИЕ 3 TIMES BLAS
+%ЗАДАНИЕ 3 TIMES OPENBLAS MKL
 \begin{figure}
 	\begin{tikzpicture}
 		\begin{axis}[
@@ -114,7 +114,7 @@
 			mark=square,
 			]
 			coordinates {
-				(500, 0.077064)(1000, 0.350995)(1500, 1.019432)
+				(500, 0.077335)(1000, 0.356616)(1500, 0.972417)
 			};
 			\addlegendentry{Моя реализация}
 			
@@ -124,13 +124,22 @@
 			mark=square,
 			]
 			coordinates {
-				(500, 0.000473)(1000, 0.003076)(1500, 0.022549)
+				(500, 0.000704)(1000, 0.002767)(1500, 0.010061)
 			};
-			\addlegendentry{Библиотека BLAS}
+			\addlegendentry{Библиотека OpenBlas}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.001631)(1000, 0.008432)(1500, 0.048598)
+			};
+			\addlegendentry{Библиотека MKL}
 			
 		\end{axis}
 	\end{tikzpicture}
-	\caption{Задание 3 - Зависимость времени выполнения умножения матриц от количества процессов}
+	\caption{Задание 3 - Зависимость времени выполнения умножения матриц от количества процессов для разных реализаций}
 \end{figure}
 
 %ЗАДАНИЕ 4 TIMES

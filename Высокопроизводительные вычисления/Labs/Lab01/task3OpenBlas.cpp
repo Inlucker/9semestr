@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 
   t_myfloat* a = NULL, * b = NULL, * c = NULL;
 
-  cout << "cblas_sgemm():" << endl;
+  cout << "OpenBlas cblas_sgemm():" << endl;
   string timesStr = "";
   string gflopsStr = "";
   int n = N;

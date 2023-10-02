@@ -1,0 +1,8 @@
+#! /bin/bash
+#SBATCH --time=0-0:1
+#SBATCH --output="result"%j.out
+#SBATCH --cpus-per-task=16
+
+# Executable
+g++ -fopenmp -o task2 task2.cpp
+srun ./task2	
