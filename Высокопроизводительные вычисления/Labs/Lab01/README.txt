@@ -1,4 +1,4 @@
-g++ -fopenmp -o task1 task1.cpp
+g++ -fopenmp -o 3-o task1 task1.cpp
 srun -c 16 --time 1 ./task1
 sbatch -c 16 --time 1 --wrap="./task1"
 sbatch ./task1.batch
@@ -8,6 +8,7 @@ sbatch ./task2.batch
 
 module load OpenBlas/v0.3.18
 g++ -fopenmp -lopenblas -o task3OpenBlas task3OpenBlas.cpp
+srun -c 16 --time 1 ./task3OpenBlas
 sbatch ./task3OpenBlas.batch
 
 module load QuantumEspresso/v6.38_pgi_mkl
@@ -15,6 +16,7 @@ g++ -fopenmp -lmkl_rt -o task3MKL task3MKL.cpp
 sbatch ./task3MKL.batch
 
 g++ -fopenmp -o task4 task4.cpp
+srun -c 16 --time 1 ./task4
 sbatch ./task4.batch
 
 

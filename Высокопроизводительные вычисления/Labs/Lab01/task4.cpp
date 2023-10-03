@@ -4,7 +4,7 @@
 #include <chrono>
 #include <string>
 
-#define N 1500 //500 1000 1500
+#define N 500 //500 1000 1500
 
 using namespace std;
 
@@ -79,7 +79,7 @@ void blas_dgemm2(int n, double* a, double* b, double* c)
   }
 }
 
-void blas_dgemm1(int n, double* a, double* b, double* c)
+void blas_dgemm(int n, double* a, double* b, double* c)
 {
   int i, j, k;
 #pragma omp parallel for shared(a, b, c) private(i, j, k)
@@ -102,6 +102,11 @@ bool compareMtrx(int n, double* a, double* b)
 
 int main(int argc, char** argv)
 {
+  int threads_num = omp_get_max_threads();
+  cout << "Input threads num: " << endl;;
+  cin >> threads_num;
+  omp_set_num_threads(threads_num);
+
 #pragma omp parallel
   {
     if (omp_get_thread_num() == 0)
@@ -113,6 +118,17 @@ int main(int argc, char** argv)
   double* a = NULL, * b = NULL, * c = NULL, * d = NULL;
   int n = N;
 
+  for (int i = 100; i < 2000; i += 100)
+  {
+    chrono::time_point<Clock> start = Clock::now();
+    a = createMtrx(i);
+    chrono::time_point<Clock> end = Clock::now();
+    chrono::nanoseconds diff = chrono::duration_cast<chrono::nanoseconds>(end - start);
+    double time = diff.count() / 1000000000.;
+    cout << "createMtrx(" << i << ") time: " << time << endl;
+    deleteMtrx(a);
+  }
+
   a = createMtrx(n);
   b = createMtrx(n);
   c = createMtrx(n);
@@ -122,15 +138,21 @@ int main(int argc, char** argv)
   //printMtrx(b, n);
 
   seq_dgemm(n, a, b, c);
-  blas_dgemm2(n, a, b, d);
+  chrono::time_point<Clock> start = Clock::now();
+  blas_dgemm(n, a, b, d);
+  chrono::time_point<Clock> end = Clock::now();
+  chrono::nanoseconds diff = chrono::duration_cast<chrono::nanoseconds>(end - start);
+  double time = diff.count() / 1000000000.;
+  double gflops = getGflops(n, time);
+  cout << threads_num << " threads and N = " << n << " matrices time: " << time << " s; GFLOPS = " << gflops << endl;
 
   //printMtrx(c, n);
   //printMtrx(d, n);
 
   if (compareMtrx(n, c, d))
-    cout << "blas_dgemm2() == seq_dgemm()" << endl;
+    cout << "blas_dgemm() == seq_dgemm()" << endl;
   else
-    cout << "blas_dgemm2() != seq_dgemm()" << endl;
+    cout << "blas_dgemm() != seq_dgemm()" << endl;
 
   deleteMtrx(a);
   deleteMtrx(b);
@@ -138,6 +160,7 @@ int main(int argc, char** argv)
   deleteMtrx(d);
 
 
+  /*
   string timesStr = "";
   string gflopsStr = "";
   n = N;
@@ -183,6 +206,7 @@ int main(int argc, char** argv)
 
     n -= 500;
   }
+  */
 
   return 0;
 }
