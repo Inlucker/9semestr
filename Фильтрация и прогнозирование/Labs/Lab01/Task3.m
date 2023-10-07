@@ -21,8 +21,8 @@ y=A(4,1:N);
 f = complex(x, y);
 % Спектральный анализ 
 [apl_spectr, omega] = ampl_fft(f);
-[apl_spectr1, omega] = ampl_fft(x);
-[apl_spectr2, omega] = ampl_fft(y);
+[apl_spectr1, omega1] = ampl_fft(x);
+[apl_spectr2, omega2] = ampl_fft(y);
 
 hold on
 plot(apl_spectr(2:N/2)*2) % график амплитудного спектра
