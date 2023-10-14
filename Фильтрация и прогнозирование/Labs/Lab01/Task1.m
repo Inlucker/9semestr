@@ -49,8 +49,9 @@ plot(k,f)
 
 [apl_spectr, omega] = ampl_fft(f);
 
-plot(apl_spectr(2:N/2)*2) % график амплитудного спектра
-% plot(omega, apl_spectr) % циклическая частота
+% plot(apl_spectr(2:N/2)*2) % график амплитудного спектра (неправильно без частот omega?)
+plot(omega(2:N/2), apl_spectr(2:N/2)*2) % циклическая частота
+% plot(omega, apl_spectr*2) % циклическая частота (неправильно начитнать с 1ого элемента?)
 % plot(omega/2/pi, apl_spectr) % линейная частота, спектрограмма
 % plot(1./(omega/2/pi), apl_spectr) % период, периодограмма
 

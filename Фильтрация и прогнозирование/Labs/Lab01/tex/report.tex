@@ -23,7 +23,7 @@
 	\label{task1_ampl_spectr_vals}
 \end{figure}
 
-На рисунке \ref{task1_ampl_spectr_vals} видно что пиковые значения близки к амплитудам.
+На рисунке \ref{task1_ampl_spectr_vals} видно что пиковые значения Y близки к амплитудам, а соответствующие им X $\approx$ циклическим частотам.
 
 \section*{Задание 2 – фурье-анализ реального сигнала}
 Считать из бюллетеня EOP C01 службы вращения Земли данные UT-TAI (6-я колонка) и построить график (рис. \ref{task2_g1}):
@@ -47,11 +47,34 @@
 
 \begin{figure}[h]
 	\center{\includegraphics[width=0.93\linewidth]{inc/task2_g3}}
-	\caption{График амплитудного спектра LOD c 1962-го года}
+	\caption{График амплитудного спектра по частотам LOD c 1962-го года}
 	\label{task2_g3}
 \end{figure}
 
 \newpage
+По пиковым значениям (рис. \ref{task2_freq_vals}) можно определить циклические частоты: 
+
+$0.00511244$
+
+$0.311859$
+
+$0.62883$
+
+%и Периоды:
+%
+%$\Large \frac{2 \cdot \pi}{0.00511244} \approx 1229$ лет
+%
+%$\Large \frac{2 \cdot \pi}{0.311859} \approx 20$ лет
+%
+%$\Large \frac{2 \cdot \pi}{0.62883} \approx 10$ лет
+
+\begin{figure}[h]
+	\center{\includegraphics[width=1\linewidth]{inc/task2_freq_vals}}
+	\caption{Значения частот}
+	\label{task2_freq_vals}
+\end{figure}
+
+%\newpage
 \section*{Задание 3 – построение спектра комплексного ряда}
 
 Из того же файла считать вторую (x) и четвертую (y) колонки и объединить их в  комплексный временной ряд (x+iy). Построить график спектра как для положительных так и для отрицательных частот:

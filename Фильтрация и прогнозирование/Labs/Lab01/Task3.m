@@ -21,16 +21,21 @@ y=A(4,1:N);
 f = complex(x, y);
 % Спектральный анализ 
 [apl_spectr, omega] = ampl_fft(f);
-[apl_spectr1, omega1] = ampl_fft(x);
-[apl_spectr2, omega2] = ampl_fft(y);
+% res = cat(2, apl_spectr(N/2:N), apl_spectr(2:N/2));
 
 hold on
-plot(apl_spectr(2:N/2)*2) % график амплитудного спектра
+% plot(apl_spectr(2:N)*2) % график амплитудного спектра
+% plot(apl_spectr(2:N/2)*2) % график амплитудного спектра
 % plot(apl_spectr1(2:N/2)*2) % график амплитудного спектра
 % plot(apl_spectr2(2:N/2)*2) % график амплитудного спектра
 hold off
 
+% plot(-(N/2)+1:1:(N/2)-1, res*2);
 
-% plot(omega, apl_spectr) % циклическая частота
+% plot(apl_spectr(2:N)*2) % график амплитудного спектра
+% plot(fftshift(apl_spectr)) % график амплитудного спектра
+% plot(omega(1:N), apl_spectr(1:N)*2) % циклическая частота
+plot(omega(2:N), apl_spectr(2:N)*2) % циклическая частота
+% plot(omega(2:N), res) % циклическая частота
 % plot(omega/2/pi, apl_spectr) % линейная частота, спектрограмма
 % plot(1./(omega/2/pi), apl_spectr) % период, периодограмма

@@ -38,8 +38,10 @@ f=lod;
 NN = N-1242;
 
 % plot(apl_spectr) % график амплитудного спектра
-plot(apl_spectr(2:NN/2)*2) % график амплитудного спектра правильный
-% plot(omega, apl_spectr) %циклическая частота
+% plot(apl_spectr(2:NN/2)*2) % график амплитудного спектра правильный
+plot(omega(2:NN/2), apl_spectr(2:NN/2)*2) %циклическая частота
+% plot(omega(2:NN), apl_spectr(2:NN)*2) %циклическая частота
+% plot(fftshift(apl_spectr(2:N))) %циклическая частота (Тоже с правильной omega)
 % plot(omega/2/pi, apl_spectr) %линейная частота, спектрограмма
 % plot(omega/2/pi/dT, apl_spectr) %линейная частота, спектрограмма
 % plot(1./(omega/2/pi), apl_spectr) %период, периодограмма
