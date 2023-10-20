@@ -1,0 +1,79 @@
+\documentclass[a4paper,oneside,14pt]{extreport}
+
+\include{preamble}
+
+\begin{document}
+
+\chapter*{Лабораторная работа 2}
+\section*{Задание 1 – Применить алгоритм скользящего среднего в частотной области}
+
+Для начала применим алгоритм скользящего среднего в частотной области для сигнала из примера для проверки (рис. \ref{task1_not_my_signal}):
+
+\begin{figure}[h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_not_my_signal}}
+	\caption{Скользящее среднее в частотной области для сигнала из примера}
+	\label{task1_not_my_signal}
+\end{figure}
+
+\newpage
+Потом применим тот же метод для сигнала из первой лабораторной работы, с тем же размером окна 10 (рис. \ref{task1_my_signal}):
+
+\begin{figure}[h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_my_signal}}
+	\caption{Скользящее среднее в частотной области с размером окна 10}
+	\label{task1_my_signal}
+\end{figure}
+
+Стоит обратить внимание что при использовании данного метода появляется краевой эффект из за того, что первые и последние $window\_size/2$ не имеют столько же соседей сколько другие точки и вычисленные в них значения сглаженного сигнала не корректны.
+
+\newpage
+\section*{Задание 2 – Изменить степень сглаживания}
+
+Попробуем увеличить размер окна до 60 чтобы подавить высокочастотную гармонику рис. (рис. \ref{task2_my_signal}):
+
+\begin{figure}[h]
+	\center{\includegraphics[width=1\linewidth]{inc/task2_my_signal}}
+	\caption{Скользящее среднее в частотной области с размером окна 60}
+	\label{task2_my_signal}
+\end{figure}
+
+\newpage
+\section*{Задание 3 – Сравнить методы сглаживания во временной и частотной областях}
+
+Теперь применим скользящее среднее во временной области, сначала для сигнала из примера с размером окна 20 для проверки (рис. \ref{task3_not_my_signal}):
+
+\begin{figure}[h]
+	\center{\includegraphics[width=1\linewidth]{inc/task3_not_my_signal}}
+	\caption{Скользящее среднее во временной области для сигнала из примера}
+	\label{task3_not_my_signal}
+\end{figure}
+
+\newpage
+Затем применим тот же метод для нашего сигнала из первой лабораторной работы, с тем же размером окна 20 (рис. \ref{task3_my_signal}):
+
+\begin{figure}[h]
+	\center{\includegraphics[width=1\linewidth]{inc/task3_my_signal}}
+	\caption{Скользящее среднее во временной области с размером окна 20}
+	\label{task3_my_signal}
+\end{figure}
+
+Здесь стоит отметить что в результате получается на $window\_size$ меньше элементов чем в исходном сигнале и их нужно смещать на $window\_size/2$ точек.
+
+\newpage
+Попробуем увеличить размер окна до 60 и сравним методы сглаживания во временной и частотной областях (рис. \ref{task3_my_signal2}-\ref{task2_my_signal2}):
+
+\begin{figure}[h]
+	\center{\includegraphics[width=0.95\linewidth]{inc/task3_my_signal2}}
+	\caption{Скользящее среднее во временной области с размером окна 60}
+	\label{task3_my_signal2}
+\end{figure}
+
+\begin{figure}[h]
+	\center{\includegraphics[width=0.9\linewidth]{inc/task2_my_signal}}
+	\caption{Скользящее среднее в частотной области с размером окна 60}
+	\label{task2_my_signal2}
+\end{figure}
+
+Как видно по графикам (рис. \ref{task3_my_signal2}-\ref{task2_my_signal2}) результат двух разных методов очень схож, но при использовании векторно-матричной свертки отсутствует краевой эффект, т.к. в нем не расчитываются значения для первых и последних $window\_size/2$ точек.
+
+\end{document}
