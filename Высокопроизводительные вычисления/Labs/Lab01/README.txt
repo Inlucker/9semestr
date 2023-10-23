@@ -1,4 +1,4 @@
-g++ -fopenmp -o 3-o task1 task1.cpp
+g++ -fopenmp -O3 -o task1 task1.cpp
 srun -c 16 --time 1 ./task1
 sbatch -c 16 --time 1 --wrap="./task1"
 sbatch ./task1.batch
