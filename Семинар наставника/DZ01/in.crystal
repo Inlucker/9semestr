@@ -1,0 +1,64 @@
+# 3d Lennard-Jones melt
+
+variable        lattice_type index fcc
+variable        a0 index 4.05 # параметр решётки
+variable        T_init index 0.8 # первая температура
+
+variable        element_name index A
+variable        atomic_mass index 1.0
+variable        potential_type index "eam/fs"
+variable        potential_file index ""
+
+variable        temp equal $(v_T_init)
+
+log             log.crystal.T_$(v_temp:%.0f).txt
+# Единицы измерения (по умолчанию LJ)
+units	    metal
+
+atom_style	atomic
+
+lattice		${lattice_type} $(v_a0)
+
+region		simbox block 0 15 0 15 0 15
+
+create_box	1 simbox
+
+# заполнить расчётную область атомами
+create_atoms	1 box
+
+
+# тип потенциала
+pair_style	${potential_type}
+pair_coeff	* * ${potential_file} ${element_name}
+
+# задать массы для типов атомов
+mass		1 $(v_atomic_mass) # для типа 1 установлена масса
+
+#label   loop_start
+
+reset_timestep 0
+
+variable    init_temp equal $(2 * v_temp)
+velocity	all create $(v_init_temp) 87287 # задать скорости группе all случайно
+
+# параметры составления списка соседей
+neighbor	1.0 bin # радиус списка соседей на 0.3 больше радиуса обрезания
+neigh_modify	every 20 delay 0 check no # как часто перестраивать список соседей
+
+fix		1 all npt temp $(v_temp) $(v_temp) 0.1 aniso 0.0 0.0 1.0
+
+# выводить термодинамические параметры на шагах с номером, кратным 50
+thermo		250
+
+fix     output all print 50 "$(step) $(temp) $(density) $(enthalpy / atoms)" &
+        file ${element_name}.crystal.T0_$(v_temp:%.0f).txt &
+        screen no &
+        title "Step Temperature Density Enthalpy_per_atom"
+
+# провести расчёт длиной 50000 шагов
+run		50000
+
+
+write_dump		all atom dump.${element_name}.crystal.T0_$(v_temp:%.0f).melt
+
+write_data      ${element_name}.crystal.T0_$(v_temp:%.0f).data
