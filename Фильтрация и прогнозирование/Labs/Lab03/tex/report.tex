@@ -1,0 +1,99 @@
+\documentclass[a4paper,oneside,14pt]{extreport}
+
+\include{preamble}
+
+\begin{document}
+
+\include{title}
+
+\chapter*{Лабораторная работа 3}
+
+Задание 1 – Добавить к сигналу из ЛР N1 авторегрессионный шум
+
+Исходный сигнал из ЛР 1 (рис. \ref{lr1_signal}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/lr1_signal}}
+	\caption{Исходный сигнал из ЛР 1}
+	\label{lr1_signal}
+\end{figure}
+
+\newpage
+Добавим к нему авторегрессионный шум (рис. \ref{task1_shum1}-\ref{task1_signal_shum1}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_shum1}}
+	\caption{Шум 1}
+	\label{task1_shum1}
+\end{figure}
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_signal_shum1}}
+	\caption{Сигнал с шумом 1}
+	\label{task1_signal_shum1}
+\end{figure}
+
+\newpage
+По графикам \ref{task1_shum1}-\ref{task1_signal_shum1} видно, что сигнал почти не изменился, поэтому увеличим разброс шума (рис. \ref{task1_shum2}-\ref{task1_signal_shum2}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_shum2}}
+	\caption{Шум 2}
+	\label{task1_shum2}
+\end{figure}
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_signal_shum2}}
+	\caption{Сигнал с шумом 2}
+	\label{task1_signal_shum2}
+\end{figure}
+
+\newpage
+По заданию 2 сохраним полученный сигнал в файл signal.mat и обработаем его с помощью Wavelet Analyzer (рис. \ref{task5}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task5}}
+	\caption{Wavelet Analyzer}
+	\label{task5}
+\end{figure}
+
+Используем старую версию cwt для нашего сигнала (рис. \ref{task2}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task2}}
+	\caption{Старая версия cwt}
+	\label{task2}
+\end{figure}
+
+\newpage
+На рисунке \ref{task2} можно увидеть что в результате Вейвлет анализа отобразилась информация как о низких, так и о высоких частотах. Изучив коэффициенты вейвлет-преобразования, можно выделить частотные компоненты сигнала. Это позволяет локализовать и анализировать различные частоты в сигнале.
+
+По заданию 4 построим 3D поверхность для данной скалограммы (рис. \ref{task4}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task4}}
+	\caption{3D поверхность}
+	\label{task4}
+\end{figure}
+
+\newpage
+По заданию 6 добавим импульс в сигнал для сотого элемента и изучим треугольник его влияния (рис. \ref{task6}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task6}}
+	\caption{Вейвлет анализ сигнала с импульсом}
+	\label{task6}
+\end{figure}
+
+Как видно по рисунку \ref{task6}, как и ожидалось, треугольник исходящий из сотого элемента выделяется среди других. Из этого можно сделать вывод что Вейвлет анализ также предоставляет информацию о локальных изменениях в сигнале, что помогает выявлять переходы между различными участками сигнала и определять их структуру.
+
+\newpage
+По заданию 7 выполним Вейвлет анализ сигнала LOD из файла eopc\_C02.dat (рис. \ref{task7}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task7}}
+	\caption{Вейвлет анализ сигнала LOD из файла eopc\_C02.dat}
+	\label{task7}
+\end{figure}
+
+\end{document}
