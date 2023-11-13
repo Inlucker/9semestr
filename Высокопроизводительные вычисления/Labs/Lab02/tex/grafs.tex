@@ -1,0 +1,208 @@
+\documentclass[a4paper,oneside,14pt]{extreport}
+
+\include{preamble}
+
+\begin{document}
+	
+% ЗАДАНИЕ 2a Pinned Memory
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={Время копирования, сек.},
+			xtick={1000,2000,3000,4000,5000},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1000, 0.000497)(2000, 0.001767)(3000, 0.004237)(4000, 0.005760)(5000, 0.011798)
+			};
+			\addlegendentry{Pinned Memory}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1000, 0.000906)(2000, 0.003129)(3000, 0.007427)(4000, 0.013596)(5000, 0.021703)
+			};
+			\addlegendentry{Global Memory}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задание 2a - Зависимость времени копирования матриц от размера}
+\end{figure}
+
+% ЗАДАНИЕ 2d Shared Memory
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={Время выполнения, сек.},
+			xtick={500,1000,1500},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.000018)(1000, 0.000032)(1500, 0.000048)
+			};
+			\addlegendentry{Shared Memory}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.000020)(1000, 0.000037)(1500, 0.000055)
+			};
+			\addlegendentry{Global Memory}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задание 2d - Зависимость времени выполнения умножения матриц от размера матриц и типа памяти}
+\end{figure}
+
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={GFLOPS},
+			xtick={500,1000,1500},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(500, 14209.971018)(1000, 61788.198219)(1500, 140616.557136)
+			};
+			\addlegendentry{Shared Memory}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(500, 12809.896709)(1000, 54658.187920)(1500, 123777.266996)
+			};
+			\addlegendentry{Global Memory}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задание 2d - Зависимость GFLOPS умножения матриц от размера матриц и типа памяти}
+\end{figure}
+
+% ЗАДАНИЕ 4-5 cuBlas openMP
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={Время выполнения, сек.},
+			xtick={500,1000,1500},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.000038)(1000, 0.000080)(1500, 0.000122)
+			};
+			\addlegendentry{Моя реализация}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.000029)(1000, 0.000171)(1500, 0.000556)
+			};
+			\addlegendentry{Библиотека CuBlas}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.001916)(1000, 0.011163)(1500, 0.041715)
+			};
+			\addlegendentry{OpenMP}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задания 4 и 5 - Зависимость времени выполнения умножения матриц от размера матриц и используемой библиотеки}
+\end{figure}
+
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={GFLOPS},
+			xtick={500,1000,1500},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(500, 6513.912684)(1000, 25041.407868)(1500, 55520.037230)
+			};
+			\addlegendentry{Моя реализация}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(500, 8723.436088)(1000, 11675.251428)(1500, 12138.911241)
+			};
+			\addlegendentry{Библиотека CuBlas}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(500, 130.473453)(1000, 179.160306)(1500, 161.811457)
+			};
+			\addlegendentry{OpenMP}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задания 4 и 5 - Зависимость GFLOPS умножения матриц от размера матриц и используемой библиотеки}
+\end{figure}
+
+\end{document}
