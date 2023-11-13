@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#define N (500)
+#define N (512)
 #define THREADS_N (32)
 #define ITERS (1)
 #define CUDA_STREAMS_NUM (8)
@@ -51,12 +51,14 @@ float* copyMtrxToDevice(int n, float*& mtrx)
 
 float* copyMtrxToDeviceAsync(int n, float*& mtrx, cudaStream_t stream[CUDA_STREAMS_NUM])
 {
-  int full_size = n * n * sizeof(float);
+  int full_size = n * n;
   int part_size = full_size / CUDA_STREAMS_NUM;
+  int mem_full_size = n * n * sizeof(float);
+  int mem_part_size = mem_full_size / CUDA_STREAMS_NUM;
   float* mtrx_dev = NULL;
   cudaMalloc((void**)&mtrx_dev, n * n * sizeof(float));
   for (int i = 0; i < CUDA_STREAMS_NUM; i++)
-    cudaMemcpyAsync(mtrx_dev + i * part_size, mtrx + i * part_size, full_size, cudaMemcpyHostToDevice, stream[i]);
+    cudaMemcpyAsync(mtrx_dev + i * part_size, mtrx + i * part_size, mem_part_size, cudaMemcpyHostToDevice, stream[i]);
   return mtrx_dev;
 }
 
@@ -69,11 +71,13 @@ float* copyMtrxFromDevice(int n, float*& mtrx_dev)
 
 float* copyMtrxFromDeviceAsync(int n, float*& mtrx_dev, cudaStream_t stream[CUDA_STREAMS_NUM])
 {
-  int full_size = n * n * sizeof(float);
+  int full_size = n * n;
   int part_size = full_size / CUDA_STREAMS_NUM;
+  int mem_full_size = n * n * sizeof(float);
+  int mem_part_size = mem_full_size / CUDA_STREAMS_NUM;
   float* mtrx = (float*)malloc(n * n * sizeof(float));
   for (int i = 0; i < CUDA_STREAMS_NUM; i++)
-    cudaMemcpyAsync(mtrx + i * part_size, mtrx_dev + i * part_size, full_size, cudaMemcpyDeviceToHost, stream[i]);
+    cudaMemcpyAsync(mtrx + i * part_size, mtrx_dev + i * part_size, mem_part_size, cudaMemcpyDeviceToHost, stream[i]);
   return mtrx;
 }
 
@@ -190,11 +194,29 @@ int main()
   float* a = createMtrxPinned(N);
   float* b = createMtrxPinned(N);
   float* c = createMtrxPinned(N);
-  float* adev = copyMtrxToDeviceAsync(N, a, stream);
-  float* bdev = copyMtrxToDeviceAsync(N, b, stream);
+  //float* adev = copyMtrxToDeviceAsync(N, a, stream);
+  //float* bdev = copyMtrxToDeviceAsync(N, b, stream);
+
+  int full_size = N * N;
+  int part_size = full_size / CUDA_STREAMS_NUM;
+  int mem_full_size = N * N * sizeof(float);
+  int mem_part_size = mem_full_size / CUDA_STREAMS_NUM;
+  float* adev = createMtrxOnDevice(N);
+  float* bdev = createMtrxOnDevice(N);
+  for (int i = 0; i < CUDA_STREAMS_NUM; i++)
+  {
+    cudaMemcpyAsync(adev + i * part_size, a + i * part_size, mem_part_size, cudaMemcpyHostToDevice, stream[i]);
+    cudaMemcpyAsync(bdev + i * part_size, b + i * part_size, mem_part_size, cudaMemcpyHostToDevice, stream[i]);
+  }
+
   //float* adev = copyMtrxToDevice(N, a);
   //float* bdev = copyMtrxToDevice(N, b);
   float* cdev = createMtrxOnDevice(N);
+
+  //float* a2 = copyMtrxFromDevice(N, adev);
+  //float* b2 = copyMtrxFromDevice(N, bdev);
+  //printMtrx(a2, N);
+  //printMtrx(b2, N);
 
   //printMtrx(a, N);
   //printMtrx(b, N);
@@ -208,8 +230,8 @@ int main()
   printf("blocks.x = %d blocks.y = %d\n\n", blocks.x, blocks.y);
   cuda_dgemm << < blocks, threads >> > (N, adev, bdev, cdev);*/
 
-  int full_size = N * N;
-  int part_size = full_size / CUDA_STREAMS_NUM;
+  //int full_size = N * N;
+  //int part_size = full_size / CUDA_STREAMS_NUM;
 
   int x[CUDA_STREAMS_NUM];
   int dx = div_up(N * N, CUDA_STREAMS_NUM);
@@ -219,9 +241,9 @@ int main()
 
   int threads_n = THREADS_N * THREADS_N;
   dim3 threads(threads_n);
-  printf("threads.x = %d threads.y = %d\n", threads.x, threads.y);
+  //printf("threads.x = %d threads.y = %d\n", threads.x, threads.y);
   dim3 blocks(div_up(dx, threads_n));
-  printf("blocks.x = %d blocks.y = %d\n\n", blocks.x, blocks.y);
+  //printf("blocks.x = %d blocks.y = %d\n\n", blocks.x, blocks.y);
 
   for (int i = 0; i < CUDA_STREAMS_NUM; i++)
     cuda_dgemmAsync << < div_up(dx, threads_n), threads_n, 0, stream[i] >> > (N, adev, bdev, cdev, x[i]);
@@ -229,7 +251,10 @@ int main()
   //Без этого не работает
   cudaDeviceSynchronize();
 
-  float* d = copyMtrxFromDeviceAsync(N, cdev, stream);
+  //float* d = copyMtrxFromDeviceAsync(N, cdev, stream);
+  float* d = (float*)malloc(N * N * sizeof(float));
+  for (int i = 0; i < CUDA_STREAMS_NUM; i++)
+    cudaMemcpyAsync(d + i * part_size, cdev + i * part_size, mem_part_size, cudaMemcpyDeviceToHost, stream[i]);
   //float* d = copyMtrxFromDevice(N, cdev);
 
   if (cudaDeviceSynchronize() != cudaSuccess)
@@ -252,15 +277,18 @@ int main()
   deleteMtrxFromDevice(bdev);
   deleteMtrxFromDevice(cdev);
 
-  //Time comparation //ПОПРОБОВАТЬ CHRONO??????????????????????????????????????????????????????????????????????????????
+  //Time comparation
   cudaEvent_t e_start, e_stop;
   cudaEventCreate(&e_start);
   cudaEventCreate(&e_stop);
 
+  int start_n = 5000;
+  int step_n = 1000;
+  
   std::cout << "Cuda Streams cuda_dgemm():" << std::endl;
   std::string timesStr = "";
   std::string gflopsStr = "";
-  int n = 1500;
+  int n = start_n;
   while (n > 0)
   {
     float* a2 = createMtrxPinned(n);
@@ -283,14 +311,18 @@ int main()
 
     //cudaEventRecord(e_start, 0);
 
-    int threads_n = THREADS_N * THREADS_N;
+    /*int threads_n = THREADS_N * THREADS_N;
     dim3 threads(threads_n);
     dim3 blocks(div_up(dx, threads_n));
-    //printf("threads.x = %d threads.y = %d\n", threads.x, threads.y);
-    //printf("blocks.x = %d blocks.y = %d\n", blocks.x, blocks.y);
+    printf("threads.x = %d threads.y = %d\n", threads.x, threads.y);
+    printf("blocks.x = %d blocks.y = %d\n", blocks.x, blocks.y);
     //for (int it = 0; it < ITERS; it++)
-      //for (int i = 0; i < CUDA_STREAMS_NUM; i++)
-        //cuda_dgemmAsync << < blocks, threads, 0, stream[i] >> > (N, adev2, bdev2, cdev2, x[i]);
+      for (int i = 0; i < CUDA_STREAMS_NUM; i++)
+        cuda_dgemmAsync << < blocks, threads, 0, stream[i] >> > (n, adev2, bdev2, cdev2, x[i]);*/
+
+    dim3 threads(THREADS_N, THREADS_N);
+    dim3 blocks(div_up(threads.x, n), div_up(threads.y, n));
+    cuda_dgemm << < blocks, threads >> > (n, adev2, bdev2, cdev2);
 
     /*dim3 threads(THREADS_N, THREADS_N);
     dim3 blocks(div_up(n, threads.x*4), div_up(n, threads.y*4));
@@ -333,7 +365,7 @@ int main()
     deleteMtrxFromDevice(bdev2);
     deleteMtrxFromDevice(cdev2);
 
-    n -= 500;
+    n -= step_n;
   }
   std::cout << timesStr << std::endl;
   std::cout << gflopsStr << std::endl;
@@ -345,7 +377,7 @@ int main()
   std::cout << "Usual cuda_dgemm():" << std::endl;
   timesStr = "";
   gflopsStr = "";
-  n = 1500;
+  n = start_n;
   while (n > 0)
   {
     float* a2 = createMtrxPinned(n);
@@ -364,7 +396,7 @@ int main()
     //cudaEventRecord(e_start, 0);
 
     //for (int it = 0; it < ITERS; it++)
-      //cuda_dgemm << < blocks, threads >> > (n, adev2, bdev2, cdev2);
+      cuda_dgemm << < blocks, threads >> > (n, adev2, bdev2, cdev2);
 
     //cudaEventRecord(e_stop, 0);// 0 означает поток CUDA 0
     //cudaEventSynchronize(e_stop);
@@ -391,7 +423,7 @@ int main()
     deleteMtrxFromDevice(bdev2);
     deleteMtrxFromDevice(cdev2);
 
-    n -= 500;
+    n -= step_n;
   }
   std::cout << timesStr << std::endl;
   std::cout << gflopsStr << std::endl;

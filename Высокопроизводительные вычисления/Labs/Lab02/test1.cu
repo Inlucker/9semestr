@@ -6,14 +6,15 @@
 #include <iostream>
 #include <string>
 
-#define N (500)
-#define THREADS_N (32)
+#define N (4)
+#define THREADS_N (4)
 #define ITERS (100)
 
 void randMtrx(float* mtrx, int n)
 {
   for (int i = 0; i < n; i++)
     for (int j = 0; j < n; j++)
+      //mtrx[n * j + i] = rand() % 10;
       mtrx[n * j + i] = rand() % 10;
 }
 
@@ -55,7 +56,7 @@ void deleteMtrx(float*& mtrx)
 void deleteMtrxFromDevice(float*& mtrx_dev)
 {
   if (cudaFree(mtrx_dev) != cudaSuccess)
-    printf("Error in deleteMtrxFromDevice()\n");
+    printf("Error in deleteMtrxFromDevice()");
   mtrx_dev = NULL;
 }
 
@@ -103,59 +104,11 @@ __global__ void cuda_dgemm(int n, float* a, float* b, float* c)
   c[n * j + i] = res;
 }
 
-__global__ void cuda_dgemmShared(int n, float* A, float* B, float* C)
-{
-  // Индексы текущего потока
-  int row = blockIdx.y * blockDim.y + threadIdx.y;
-  int col = blockIdx.x * blockDim.x + threadIdx.x;
-
-  // Shared-память для подматриц A и B
-  __shared__ float sA[THREADS_N][THREADS_N];
-  __shared__ float sB[THREADS_N][THREADS_N];
-
-  // Результирующее значение для текущего потока
-  float result = 0.0;
-
-  // Цикл по блокам
-  for (int i = 0; i < ceil((float)n / THREADS_N); ++i)
-  {
-    // Загрузка блоков матриц A и B в shared-память
-    if (col < n && i * THREADS_N + threadIdx.y < n)
-      sA[threadIdx.y][threadIdx.x] = A[(i * THREADS_N + threadIdx.y) * n + col];
-    else
-      sA[threadIdx.y][threadIdx.x] = 0.0;
-
-    if (row < n && i * THREADS_N + threadIdx.x < n)
-      sB[threadIdx.y][threadIdx.x] = B[row * n + i * THREADS_N + threadIdx.x];
-    else
-      sB[threadIdx.y][threadIdx.x] = 0.0;
-
-    // Синхронизация для завершения загрузки данных в shared-память
-    __syncthreads();
-
-    // Умножение подматрицы A на подматрицу B в shared-памяти
-    for (int j = 0; j < THREADS_N; ++j)
-      result += sA[j][threadIdx.x] * sB[threadIdx.y][j];
-
-    // Синхронизация перед следующей итерацией
-    __syncthreads();
-  }
-
-  // Запись результата в матрицу C
-  if (row < n && col < n)
-    C[row * n + col] = result;
-}
-
 bool compareMtrx(int n, float* a, float* b)
 {
   for (int i = 0; i < n * n; i++)
     if (a[i] != b[i])
-    {
-      int i2 = i / N;
-      int j = i % N;
-      printf("compareMtrx() Error: i = %d, j = %d, %.0f != %.0f\n", i2, j, a[i], b[i]);
       return false;
-    }
   return true;
 }
 
@@ -175,11 +128,6 @@ int main()
 
   float* a = createMtrx(N);
   float* b = createMtrx(N);
-  /*for (int i = 0; i < N * N; i++)
-    a[i] = i + 1;
-  for (int i = 0; i < N; i++)
-    for (int j = 0; j < N; j++)
-      b[i * N + j] = j * N + i + 1;*/
   float* c = createMtrx(N);
   float* adev = copyMtrxToDevice(N, a);
   float* bdev = copyMtrxToDevice(N, b);
@@ -188,17 +136,16 @@ int main()
   //printMtrx(a, N);
   //printMtrx(b, N);
   seq_dgemm(N, a, b, c);
-  //printMtrx(c, N);
+  printMtrx(c, N);
 
-  //cuda_dgemmShared << < blocks, threads >> > (N, adev, bdev, cdev);
-  cuda_dgemmShared << < blocks, threads >> > (N, adev, bdev, cdev);
+  cuda_dgemm << < blocks, threads >> > (N, adev, bdev, cdev);
   float* d = copyMtrxFromDevice(N, cdev);
-  //printMtrx(d, N);
+  printMtrx(d, N);
 
   if (compareMtrx(N, c, d))
-    printf("Shared Memory cuda_dgemm() == seq_dgemm()\n\n");
+    printf("cuda_dgemm() == seq_dgemm()\n");
   else
-    printf("Shared Memory cuda_dgemm() != seq_dgemm()\n\n");
+    printf("cuda_dgemm() != seq_dgemm()\n");
 
   deleteMtrx(a);
   deleteMtrx(b);
@@ -209,63 +156,14 @@ int main()
   deleteMtrxFromDevice(cdev);
 
   //Time comparation
-  cudaEvent_t e_start, e_stop;
+  /*cudaEvent_t e_start, e_stop;
   cudaEventCreate(&e_start);
   cudaEventCreate(&e_stop);
 
-  std::cout << "Shared Memory cuda_dgemm():" << std::endl;
+  std::cout << "My cuda_dgemm():" << std::endl;
   std::string timesStr = "";
   std::string gflopsStr = "";
   int n = 1500;
-  while (n > 0)
-  {
-    float* a2 = createMtrx(n);
-    float* b2 = createMtrx(n);
-    //float* c = (float*)malloc(N * N * sizeof(float));
-    float* adev2 = copyMtrxToDevice(n, a2);
-    float* bdev2 = copyMtrxToDevice(n, b2);
-    float* cdev2 = createMtrxOnDevice(n);
-
-    dim3 threads(THREADS_N, THREADS_N);
-    dim3 blocks(div_up(threads.x, n), div_up(threads.y, n));
-
-    cudaEventRecord(e_start, 0);
-
-    for (int it = 0; it < ITERS; it++)
-      cuda_dgemmShared << < blocks, threads >> > (n, adev2, bdev2, cdev2);
-
-    cudaEventRecord(e_stop, 0);// 0 означает поток CUDA 0
-    cudaEventSynchronize(e_stop);
-
-    //float* c2 = copyMtrxFromDevice(n, cdev2);
-
-    float elapsedTime;
-    cudaEventElapsedTime(&elapsedTime, e_start, e_stop);
-    double time = elapsedTime / 1000. / ITERS;
-    double gflops = getGflops(n, time);
-    std::cout << "N = " << n << " matrices time : " << time << " s; GFLOPS = " << gflops << std::endl;
-    timesStr = "(" + std::to_string(n) + ", " + std::to_string(time) + ")" + timesStr;
-    gflopsStr = "(" + std::to_string(n) + ", " + std::to_string(gflops) + ")" + gflopsStr;
-
-    //printMtrx(c, n);
-
-    deleteMtrx(a2);
-    deleteMtrx(b2);
-    //deleteMtrx(c2);
-    deleteMtrxFromDevice(adev2);
-    deleteMtrxFromDevice(bdev2);
-    deleteMtrxFromDevice(cdev2);
-
-    n -= 500;
-  }
-  std::cout << timesStr << std::endl;
-  std::cout << gflopsStr << std::endl;
-  std::cout << "\n\n";
-
-  std::cout << "Usual cuda_dgemm():" << std::endl;
-  timesStr = "";
-  gflopsStr = "";
-  n = 1500;
   while (n > 0)
   {
     float* a2 = createMtrx(n);
@@ -309,7 +207,7 @@ int main()
   }
   std::cout << timesStr << std::endl;
   std::cout << gflopsStr << std::endl;
-  std::cout << "\n\n";
+  std::cout << "\n\n";*/
 
   return 0;
 }

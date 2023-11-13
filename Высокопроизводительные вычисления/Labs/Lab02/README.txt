@@ -1,6 +1,6 @@
 module load nvidia_sdk/nvhpc/23.5
-salloc -n 1 --gpus=1 -A proj_1447
 cd lab02
+salloc -n 1 --gpus=1 -A proj_1447
 
 module avail
 module list
@@ -17,6 +17,8 @@ nvcc kernelAsync.cu -o kernelAsync
 srun -c 32 -N 1 -G 1 -A proj_1447 --time=1 kernelAsync
 nvc -mp=gpu main_f_x_gpu_openmp.c
 srun -c 32 -N 1 -G 1 -A proj_1447 --time=1 a.out
+nvcc AddArrTestStreams.cu -o AddArr
+srun -N 1 -G 1 -A proj_1447 --time=1 AddArr
 
 
 nvcc task1.cu -O3 -o task1
@@ -29,8 +31,23 @@ nvcc task2c.cu -O3 -o task2c
 srun -N 1 -G 1 -A proj_1447 --time=1 task2c
 nvcc task2d.cu -O3 -o task2d
 srun -N 1 -G 1 -A proj_1447 --time=1 task2d
+nvcc task3.cu -O3 -o task3
+srun -N 1 -G 1 -A proj_1447 --time=1 task3
 nvcc task4.cu -O3 -o task4 -lcublas
 srun -N 1 -G 1 -A proj_1447 --time=1 task4
 nvc -mp=gpu task5.c -O3 -o task5
 srun -N 1 -G 1 -A proj_1447 --time=1 task5
 
+PROFILE:
+nvcc -lineinfo -arch=sm_70 -o task6 task6.cu
+srun -N 1 -G 1 -A proj_1447 --time=1 task6
+nsys profile -o results_task6 ./task6
+
+nsys profile --trace=cuda,nvtx --stats=true --output results3_task6 ./task6
+
+nvcc -lineinfo -arch=sm_70 -o task1 task1.cu
+nsys profile --trace=cuda,nvtx --stats=true --output results1_task1 ./task1
+
+nsys profile --trace=cuda,nvtx --stats=true --trace-fork-before-exec=true --output results4_task6  ./task6
+
+ncu --metrics smsp__sass_average_data_bytes_per_wavefront_mem_shared ./task6

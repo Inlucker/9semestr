@@ -7,7 +7,7 @@
 #include <string>
 
 #define N (500)
-#define THREADS_N (32)
+#define THREADS_N (16)
 #define ITERS (100)
 
 void randMtrx(float* mtrx, int n)
@@ -108,10 +108,13 @@ __global__ void cuda_dgemmShared(int n, float* A, float* B, float* C)
   // Индексы текущего потока
   int row = blockIdx.y * blockDim.y + threadIdx.y;
   int col = blockIdx.x * blockDim.x + threadIdx.x;
+  int tx = threadIdx.x;
+  int ty = threadIdx.y;
 
   // Shared-память для подматриц A и B
   __shared__ float sA[THREADS_N][THREADS_N];
   __shared__ float sB[THREADS_N][THREADS_N];
+  //int data = CUT_BANK_CHECKER(shared, threadIdx.x);
 
   // Результирующее значение для текущего потока
   float result = 0.0;
@@ -120,22 +123,22 @@ __global__ void cuda_dgemmShared(int n, float* A, float* B, float* C)
   for (int i = 0; i < ceil((float)n / THREADS_N); ++i)
   {
     // Загрузка блоков матриц A и B в shared-память
-    if (col < n && i * THREADS_N + threadIdx.y < n)
-      sA[threadIdx.y][threadIdx.x] = A[(i * THREADS_N + threadIdx.y) * n + col];
+    if (col < n && i * THREADS_N + ty < n)
+      sA[ty][tx] = A[(i * THREADS_N + ty) * n + col];
     else
-      sA[threadIdx.y][threadIdx.x] = 0.0;
+      sA[ty][tx] = 0.0;
 
-    if (row < n && i * THREADS_N + threadIdx.x < n)
-      sB[threadIdx.y][threadIdx.x] = B[row * n + i * THREADS_N + threadIdx.x];
+    if (row < n && i * THREADS_N + tx < n)
+      sB[ty][tx] = B[row * n + i * THREADS_N + tx];
     else
-      sB[threadIdx.y][threadIdx.x] = 0.0;
+      sB[ty][tx] = 0.0;
 
     // Синхронизация для завершения загрузки данных в shared-память
     __syncthreads();
 
     // Умножение подматрицы A на подматрицу B в shared-памяти
     for (int j = 0; j < THREADS_N; ++j)
-      result += sA[j][threadIdx.x] * sB[threadIdx.y][j];
+      result += sA[j][tx] * sB[ty][j]; //swaped tx ty to evade banck conflicts
 
     // Синхронизация перед следующей итерацией
     __syncthreads();
@@ -166,6 +169,7 @@ int div_up(int x, int y)
 
 int main()
 {
+  //cudaDeviceSetSharedMemConfig(cudaSharedMemBankSizeEightByte);
   srand(time(NULL));
   printf("N = %d\n", N);
   dim3 threads(THREADS_N, THREADS_N);

@@ -55,7 +55,7 @@ void deleteMtrx(float*& mtrx)
 void deleteMtrxFromDevice(float*& mtrx_dev)
 {
   if (cudaFree(mtrx_dev) != cudaSuccess)
-    printf("Error in deleteMtrxFromDevice()");
+    printf("Error in deleteMtrxFromDevice()\n");
   mtrx_dev = NULL;
 }
 

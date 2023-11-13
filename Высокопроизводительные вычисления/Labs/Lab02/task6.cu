@@ -7,7 +7,7 @@
 #include <string>
 
 #define N (500)
-#define THREADS_N (32)
+#define THREADS_N (16)
 #define ITERS (100)
 
 void randMtrx(float* mtrx, int n)
@@ -209,6 +209,7 @@ int main()
   deleteMtrxFromDevice(cdev);
 
   //Time comparation
+  /*
   cudaEvent_t e_start, e_stop;
   cudaEventCreate(&e_start);
   cudaEventCreate(&e_stop);
@@ -309,7 +310,7 @@ int main()
   }
   std::cout << timesStr << std::endl;
   std::cout << gflopsStr << std::endl;
-  std::cout << "\n\n";
+  std::cout << "\n\n";*/
 
   return 0;
 }
