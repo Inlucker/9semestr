@@ -51,3 +51,4 @@ nsys profile --trace=cuda,nvtx --stats=true --output results1_task1 ./task1
 nsys profile --trace=cuda,nvtx --stats=true --trace-fork-before-exec=true --output results4_task6  ./task6
 
 ncu --metrics smsp__sass_average_data_bytes_per_wavefront_mem_shared ./task6
+
