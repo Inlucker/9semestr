@@ -52,3 +52,6 @@ nsys profile --trace=cuda,nvtx --stats=true --trace-fork-before-exec=true --outp
 
 ncu --metrics smsp__sass_average_data_bytes_per_wavefront_mem_shared ./task6
 
+
+srun nsys nvprof ./cuda 1000 10
+srun nsys profile -t cuda ./cuda 1000 10
