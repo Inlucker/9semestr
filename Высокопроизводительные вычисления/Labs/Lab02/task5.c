@@ -39,9 +39,9 @@ void seq_dgemm(int n, float* a, float* b, float* c)
 
 void omp_dgemm(int n, float* A, float* B, float* C)
 {
-#pragma omp target map(to: A[0:n*n], B[0:n*n]) map(from: C[0:n*n])
-  {
-#pragma omp parallel for collapse(2)
+#pragma omp target teams distribute parallel for collapse(2) map(to: A[0:n*n], B[0:n*n]) map(from: C[0:n*n])
+//  {
+//#pragma omp parallel for collapse(2)
     for (int j = 0; j < n; j++)
     {
       for (int i = 0; i < n; i++)
@@ -52,7 +52,7 @@ void omp_dgemm(int n, float* A, float* B, float* C)
         C[j * n + i] = sum;
       }
     }
-  }
+//  }
 }
 
 int main()

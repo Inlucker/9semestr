@@ -41,6 +41,79 @@
 	\caption{Задание 2a - Зависимость времени копирования матриц от размера}
 \end{figure}
 
+% ЗАДАНИЕ 2b Unified Memory
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={Время выполнения, сек.},
+			xtick={500,1000,1500},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.001090)(1000, 0.002711)(1500, 0.005059)
+			};
+			\addlegendentry{Unified Memory}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.000894)(1000, 0.004118)(1500, 0.008561)
+			};
+			\addlegendentry{Global Memory}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задание 2b - Зависимость времени выполнения умножения матриц от размера матриц и типа памяти}
+\end{figure}
+
+\begin{figure}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Размер матриц},
+			ylabel={GFLOPS},
+			xtick={1000,2000,3000,4000,5000},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1000, 1173.470981)(2000, 3009.553528)(3000, 5058.792779)(4000, 6891.532770)(5000, 8733.437306)
+			};
+			\addlegendentry{Unified Memory}
+			
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1000, 1153.587789)(2000, 2349.804113)(3000, 3596.682260)(4000, 4814.096821)(5000, 6092.941455)
+			};
+			\addlegendentry{Global Memory}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Задание 2b - Зависимость GFLOPS умножения матриц от размера матриц и типа памяти}
+\end{figure}
+
 % ЗАДАНИЕ 2c Cuda Streams
 \begin{figure}
 	\begin{tikzpicture}
@@ -206,7 +279,7 @@
 			mark=square,
 			]
 			coordinates {
-				(500, 0.000015)(1000, 0.000027)(1500, 0.000040)
+				(500, 0.000017)(1000, 0.000032)(1500, 0.000047)
 			};
 			\addlegendentry{Shared Memory THREADS\_N = 16}
 			
@@ -219,6 +292,16 @@
 				(500, 0.000026)(1000, 0.000049)(1500, 0.000075)
 			};
 			\addlegendentry{Shared Memory THREADS\_N = 32}
+			
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.000014)(1000, 0.000027)(1500, 0.000039)
+			};
+			\addlegendentry{Shared Memory T\_N = 16, S\_N=24}
 			
 		\end{axis}
 	\end{tikzpicture}
@@ -242,7 +325,7 @@
 		mark=square,
 		]
 		coordinates {
-			(500, 17006.340218)(1000, 73903.335664)(1500, 168185.412738)
+			(500, 14363.669140)(1000, 62555.175512)(1500, 142236.444037)
 		};
 		\addlegendentry{Shared Memory THREADS\_N = 16}
 		
@@ -255,6 +338,15 @@
 			(500, 9696.551900)(1000, 40422.257654)(1500, 89839.111370)
 		};
 		\addlegendentry{Shared Memory THREADS\_N = 32}
+		
+		\addplot[
+		color=red,
+		mark=square,
+		]
+		coordinates {
+			(500, 17356.097675)(1000, 75459.760230)(1500, 171002.437077)
+		};
+		\addlegendentry{Shared Memory T\_N = 16, S\_N=24}
 		
 	\end{axis}
 \end{tikzpicture}
@@ -279,7 +371,7 @@
 			mark=square,
 			]
 			coordinates {
-				(500, 0.000038)(1000, 0.000080)(1500, 0.000122)
+				(500, 0.008236)(1000, 0.015366)(1500, 0.022880)
 			};
 			\addlegendentry{Моя реализация}
 			
@@ -301,6 +393,16 @@
 				(500, 0.001916)(1000, 0.011163)(1500, 0.041715)
 			};
 			\addlegendentry{OpenMP}
+			
+			
+			\addplot[
+			color=orange,
+			mark=square,
+			]
+			coordinates {
+				(500, 0.001069)(1000, 0.004611)(1500, 0.013671)
+			};
+			\addlegendentry{OpenMP teams}
 			
 		\end{axis}
 	\end{tikzpicture}
