@@ -1,7 +1,13 @@
-function [ signal, N] = GenMySignal()
+function [ signal, N, years] = GenMySignal(years_num)
+
+% Проверяем, был ли предоставлен аргумент years_num
+    if nargin < 1 || isempty(years_num)
+        years_num = 90;
+    end
 
 % 90*12 = 1080 месяцев
-N = 1080;
+% N = 1080;
+N = 12 * years_num;
 % День рождения 05.2000 => 2000*12+5=24005
 start = 24005;
 k=start:1:start+N-1;
@@ -29,3 +35,5 @@ f2=a2*sin(omega2*k + ph2);
 f3=a3*sin(omega3*k + ph3);
 
 signal = f1+f2+f3;
+
+years = start/12:1/12:(start+N-1)/12;
