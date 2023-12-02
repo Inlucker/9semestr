@@ -73,9 +73,9 @@ plot(years, acf_unbiased);
 [spectr, freq] = spect_fftn(years, acf);
 figure
 plot(freq(2:N_signal), abs(spectr(2:N_signal))) % линейная частота (циклов в год)
-xlabel('Циклов в год');
+xlabel('Cycles per year');
 
 [spectr_unbiased, freq_unbiased] = spect_fftn(years, acf_unbiased);
 figure
 plot(freq_unbiased(2:N_signal), abs(spectr_unbiased(2:N_signal))) % линейная частота (циклов в год)
-xlabel('Циклов в год');
+xlabel('Cycles per year');

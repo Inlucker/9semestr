@@ -89,7 +89,7 @@ title('Power Spectral Dencity over frequencies');
 % 4)	Подобрать полиномиальную модель (можно поменять порядок)
  % remove polynomial trend
 poly=1;
-deg=3;
+deg=2;
 if(poly)
 figure
  [x_without_trend,poly_pred]=predict_poly(dates,x,dates_to_predict, deg);
@@ -111,7 +111,7 @@ figure
 
 %harmonic trend
 % 5)	Подобрать гармоники (периоды выбрать самим)
-  Periods=[2.2 2.8 3 6 8]; %ENSO contains many frequencyes
+  Periods=[2.89 3.65 5.68 12.77]; %ENSO contains many frequencyes
 figure
   [Xsinh, harm_pred] = predict_harm(dates,x_without_trend,Periods,dates_to_predict);
  title('predict\_harm()');

@@ -21,10 +21,32 @@ close all;
  
 dt=1/12;%a month step 
 
-[x, N, dates] = GenMySignal();
+[x, N, dates] = GenMySignal(); % Добавить шум
 figure
 plot(dates,x); % to check reading 
-title('to check reading');
+title('signal');
+
+[x2, N2, dates2] = GenMySignal(91);
+
+% try to add noise with Coef*randn([1,N_signal])
+eps=9*randn(1,N2);
+% ARMA process generating
+% 1) Добавить коррелированный шум
+ar(1)=eps(1);
+ar(2)=-0.7*ar(1)+eps(2);
+
+for (i=3:1:N)
+    ar(i)=-0.7*ar(i-1)+0.2*ar(i-2)+eps(i);
+end;
+
+figure
+plot(ar)
+title('noise');
+
+figure
+plot(dates, x+ar);
+title('signal+noise');
+x = x+ar;
 
 % 2)	Вычислить оценку АКФ ( смещенную, несмещенную)
 m=mean(x);
@@ -79,10 +101,10 @@ plot(t(2:N),abs(spectr_dens(2:N))) %Power Spectral Dencity over periods (not fre
 title('Power Spectral Dencity over periods (not frequencies)');
 
 % 3)	Построить спектральную плотность
-[spectr, freq] = spect_fftn(dates, acf);
-figure
-plot(freq(2:N), abs(spectr(2:N))) % линейная частота (циклов в год)
-title('Power Spectral Dencity over frequencies');
+% [spectr, freq] = spect_fftn(dates, acf);
+% figure
+% plot(freq(2:N), abs(spectr(2:N))) % линейная частота (циклов в год)
+% title('Power Spectral Dencity over frequencies');
 
 
 %array of dates to predict
@@ -91,7 +113,7 @@ title('Power Spectral Dencity over frequencies');
 % 4)	Подобрать полиномиальную модель (можно поменять порядок)
  % remove polynomial trend
 poly=1;
-deg=4;
+deg=2;
 if(poly)
 figure
  [x_without_trend,poly_pred]=predict_poly(dates,x,dates_to_predict, deg);
@@ -101,14 +123,14 @@ else
 end;
  
 %trend plotting
-figure
+% figure
 plot(dates,x,dates,x-x_without_trend,dates_to_predict,poly_pred)
 title('trend plotting');
 
 %here we check PSD after trend was removed
  [ spectr, freq] = spect_fftn(dates, x_without_trend)
 figure
- plot(freq , abs(spectr))
+ plot(freq(2:N), abs(spectr(2:N)))
  title('here we check PSD after trend was removed');
 
 %harmonic trend
@@ -117,7 +139,7 @@ figure
 figure
   [Xsinh, harm_pred] = predict_harm(dates,x_without_trend,Periods,dates_to_predict);
  title('predict\_harm()');
-figure
+% figure
     plot(dates,x,dates_to_predict,harm_pred+poly_pred,'red',dates,x-Xsinh+m); 
  title('harmonic trend'); 
     
@@ -128,11 +150,11 @@ title('data after harmonics have been removed');
      
   %autoregression
 %   6)	Подобрать авторегрессию – поменять порядок
-   ar_order=25;
+   ar_order=50;
 figure
   [XAR_pred,cf] = predict_ar(dates,Xsinh,dates_to_predict,ar_order);
  title('predict\_ar()');
-figure
+% figure
   plot(dates, Xsinh,dates_to_predict,XAR_pred)
 title('autoregression'); 
  
@@ -152,9 +174,11 @@ title('add all prediction together - Построить графики моде�
 
 
 [x2, N2, dates2] = GenMySignal(91);
-
+for (i=3:1:N2)
+    ar(i)=-0.7*ar(i-1)+0.2*ar(i-2)+eps(i);
+end;
 figure
- plot(dates2,x2,dates_to_predict,z);  
+ plot(dates2,x2+ar,dates_to_predict,z);  
 title('Проверка прогноза'); 
 
 %   foutname= sprintf('%s/ENSO_prediction.dat',path);
