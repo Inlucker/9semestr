@@ -13,9 +13,11 @@ F = -G;
 C = [[1 0]; [0 1]];
 
 sys = ss(G, F, C, 0);
+% figure('Position', get(0,'Screensize'));
 figure
 step(sys)
 
+% figure('Position', get(0,'Screensize'));
 figure
 impulse(sys)
 

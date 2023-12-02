@@ -1,0 +1,123 @@
+\documentclass[a4paper,oneside,14pt]{extreport}
+
+\include{preamble}
+
+\begin{document}
+
+\include{title}
+
+\chapter*{Лабораторная работа 6}
+
+\textbf{Часть 1}
+
+Запрограммируем матричную динамическую систему вращения Земли с параметрами $T=300$ сек,   $f_c=365/433$ сут$^{-1}$,  $Q=100$ и подадим на вход единичный импульс и функцию Хевисайда (рис. \ref{task1_step}-\ref{task1_impulse}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=0.9\linewidth]{inc/task1_step}}
+	\caption{Отклик на функцию Хевисайда}
+	\label{task1_step}
+\end{figure}
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=0.9\linewidth]{inc/task1_impulse}}
+	\caption{Отклик на единичный импульс}
+	\label{task1_impulse}
+\end{figure}
+
+% Отобразить в отчете графики, что по осям?
+
+\newpage
+\textbf{Часть 2}
+
+Затем проверим нуль-пространство матриц G систем из первой части, их детерминант, характеристическое уравнение, его корни.
+
+Результатом null(G) является пустая матрица. Детерминант равен 28.0560. Характеристическое уравнение имеет коэффициенты 1.0000, 0.0530 и 28.0560, а корни характеристического полинома p равны -0.0265 + 5.2967i и -0.0265 - 5.2967i.
+
+Теперь вычислим переходную матрицу системы используя символьную переменную syms t:
+
+Элемент матрицы (0 0):
+\\
+\noindent $\frac{\exp(\pi t (- 843/100000 - 843i/500))}{2} + \frac{\exp(\pi t (- 843/100000 + 843i/500))}{2}$
+
+Элемент матрицы (0 1):
+\\
+\noindent $-\frac{\exp(\pi t (- 843/100000 - 843i/500))\cdot 1i}{2} + \frac{\exp(\pi t (- 843/100000 + 843i/500))\cdot 1i}{2}$
+
+Элемент матрицы (1 0):
+\\
+\noindent $\frac{\exp(\pi t (- 843/100000 - 843i/500))\cdot 1i}{2} - \frac{\exp(\pi t (- 843/100000 + 843i/500))\cdot 1i}{2}$
+
+Элемент матрицы (1 1):
+\\
+\noindent $\frac{\exp(\pi t (- 843/100000 - 843i/500))}{2} + \frac{\exp(\pi t (- 843/100000 + 843i/500))}{2}$
+
+Вся матрица:
+\\ \\
+\noindent $\begin{bmatrix}
+	\frac{\exp(\pi t (- 843/100000 - 843i/500))}{2} + & -\frac{\exp(\pi t (- 843/100000 - 843i/500))\cdot 1i}{2} + \\
+	+ \frac{\exp(\pi t (- 843/100000 + 843i/500))}{2} & + \frac{\exp(\pi t (- 843/100000 + 843i/500))\cdot 1i}{2} \\
+	\frac{\exp(\pi t (- 843/100000 - 843i/500))\cdot 1i}{2} - & \frac{\exp(\pi t (- 843/100000 - 843i/500))}{2} + \\
+	- \frac{\exp(\pi t (- 843/100000 + 843i/500))\cdot 1i}{2} &  + \frac{\exp(\pi t (- 843/100000 + 843i/500))}{2} \\
+\end{bmatrix}$
+\\
+
+Матричная экспонента используется для анализа и решения линейных систем с постоянными коэффициентами. Она может быть использована для предсказания поведения системы.
+
+\newpage
+\textbf{Часть 3}
+
+Для начала выведем наш сигнал из ЛР1 (рис. \ref{task3_signal}):
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task3_signal}}
+	\caption{Сигнал из ЛР1}
+	\label{task3_signal}
+\end{figure}
+
+В текущем сигнале шаг равен месяцу. Проинтерполируем с помощью функции interp1, сгустив точки с семплингом 6 часов. Возьмем его в смеси с шумом примерно равной с ним амплитуды (рис. \ref{task3_noise}-\ref{task3_signal_noise}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task3_noise}}
+	\caption{Шум}
+	\label{task3_noise}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+\center{\includegraphics[width=1\linewidth]{inc/task3_signal_noise}}
+\caption{Сигнал с шумом}
+\label{task3_signal_noise}
+\end{figure}
+
+Построим СПМ (рис. \ref{task3_psd}):
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task3_psd}}
+	\caption{СПМ}
+	\label{task3_psd}
+\end{figure}
+
+\noindent По пиковым значениям можно проверить линейные частоты изначальных гармоник: 
+
+\noindent $1 \text{ цикл в год, } \frac{1}{1} = 1 \text{, что соответствует гармонике с периодом 1 год}$
+
+\noindent $0.(1) \text{ цикл в год, } \frac{1}{0.111111} \approx 9\text{, что соответствует гармонике с периодом 8.86 год}$
+
+\noindent $0.0(5) \text{ цикл в год, } \frac{1}{0.055556} \approx 18\text{, что соответствует гармонике с периодом 18.6 год}$
+
+\noindent А также амплитуды: $\sim 20, 36$ и $38$
+
+\newpage
+
+Протестируем динамическую систему, запустив функцию lsim подав на оба канала signal+noise, считая начальным состоянием (0,0) и шагом 6 часов, но только для первых 30К точек, $\sim 21$ год (рис. \ref{task3_lsim}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[page=1,width=1\linewidth]{inc/task3_lsim}}
+	\center{\includegraphics[page=2,width=1\linewidth]{inc/task3_lsim}}
+	\caption{Результат lsim}
+	\label{task3_lsim}
+\end{figure}
+
+На первом графике рисунка \ref{task3_lsim} серым изображен сигнал с шумом, а на втором они же по отдельности. Синим нарисован отклик системы на входной сигнал. Как видно, он более сглаженный, чем исходный сигнал, а также не содержит высокочастотных компонентов и не подвержен влиянию шумов.
+
+Кроме этого наблюдается задержка отклика. Для  высокочастотных сигналов она более заметная, поскольку система может не успевать адекватно реагировать на быстрые изменения в сигнале. Низкочастотные сигналы, напротив, могут быть лучше учтены системой, и задержка будет менее критичной.
+
+\end{document}
