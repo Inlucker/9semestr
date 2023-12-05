@@ -1,0 +1,1 @@
+nvcc -I"C:\Program Files (x86)\Microsoft SDKs\MPI\Include" -I"c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\include" -g ./src/main.cu -o ./main.exe -L"C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\x64" -L"c:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\lib\x64" -lmsmpi -lcudart

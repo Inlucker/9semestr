@@ -143,7 +143,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < NX; i++)
     {
       double x = i * L / (NX - 1);
-      printf("%.2f\t%.4f\n", x, all_temperature[i * world_segments_num / (NX - 1)]);
+      printf("%.2f\t%.4f\n", x, all_temperature[i * (world_segments_num - 1) / (NX - 1)]);
     }
 
     bool eq_flag = true;
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < NX; i++)
     {
       double x = i * L / (NX - 1);
-      double num_sol = all_temperature[i * world_segments_num / (NX - 1)];
+      double num_sol = all_temperature[i * (world_segments_num - 1) / (NX - 1)];
       double anal_sol = analytical_solution(x, T_FINAL);
       printf("%.2f\t%.4f\n", x, anal_sol);
       double diff = fabs(anal_sol - num_sol);
