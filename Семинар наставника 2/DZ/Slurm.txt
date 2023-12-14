@@ -1,0 +1,14 @@
+g++ -fopenmp -O3 -o OpenMPSort OpenMPSort.cpp
+srun -c 16 --time 1 ./OpenMPSort
+g++ -fopenmp -O3 -o QuickSortTest QuickSortTest.cpp
+srun -c 16 --time 1 ./QuickSortTest
+
+
+g++ -fopenmp -O3 -o QuickSortSeq QuickSortSeq.cpp
+srun -c 16 --time 1 ./QuickSortSeq
+
+g++ -fopenmp -O3 -o QuickSortParallel QuickSortParallel.cpp
+srun -c 16 --time 1 ./QuickSortParallel
+
+
+srun -c 16 --time 1 python QuickSortSeq.py
