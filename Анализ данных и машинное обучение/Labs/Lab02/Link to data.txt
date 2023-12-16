@@ -1,0 +1,7 @@
+https://www.kaggle.com/competitions/optiver-trading-at-the-close/overview
+
+https://www.kaggle.com/code/nhsmith/optiver-catboost-with-feature-selection
+
+https://drive.google.com/file/d/1wlIa8H8e6HG0LK79kDcCp0zvJ-LQ8tEl/view
+
+https://drive.google.com/file/d/1OxB_SxwdKEHqyYNQRFzGVPTDIqLtm__Z/view
