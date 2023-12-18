@@ -12,5 +12,541 @@
 	\item Провести исследование реализованных алгоритмов по времени и ускорению в зависимости от числа потоков и размера массива.
 \end{enumerate}
 
+\section*{Технические характеристики}
+
+Ниже приведены технические характеристики устройства, на котором были проведены эксперименты при помощи разработанного ПО:
+
+\begin{itemize}
+	\item операционная система: Windows 10 (64-разрядная);
+	\item оперативная память: 32 GB;
+	\item процессор: Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz;
+	\item количество ядер: 4;
+	\item количество потоков: 8.
+\end{itemize}
+
+\section*{Постановка экспериментов}
+
+Для измерения времени выполнения реализованных алгоритмов использовалась функция omp\_get\_wtime(), т.к. параллелизация производилась средствами технологии openMP. Для более точной оценки замеры проводились 100-1000 итераций в зависимости от размера массивов, а результат усреднялся.
+
+%\newpage
+\section*{Реализация на C}
+
+Сначала был реализован последовательный алгоритм сортировки Хоара (листинг \ref{QuickSortSeq.cpp}). В познавательных целях были опробованы разбиение Ломуто и схема Хоара. После этого был реализован параллельный алгоритм Хоара с использованием технологии openMP (листинг \ref{QuickSortPar.cpp}). Была использована стратегия "Разделяй и властвуй", которая отлично ложится на алгоритм быстрой сортировки - при каждом новом рекурсивном вызове процесс разделяется на два и так, до тех пор, пока не будут использовано максимально возможно число потоков. Были опробованы варианты с omp parallel sections, omp task с условием if и просто omp task. Лучше всего показала себя последняя реализация, поэтому для сравнения с последовательным алгоритм использовалась именно она.
+
+При первоначальной тестировании последовательного и параллельного алгоритмов получались неудовлетворительные результаты: параллельная реализация показывала себя хуже последовательной и не ускорялась с увеличением числа потоков. Но после включения оптимизации (флагом /O2 в Visual Studio) получились более корректные данные (рис. \ref{C_seq_par_compare}-\ref{C_seq_par_boost}).
+
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Время выполнения, сек.},
+			xtick={1,2,4,8},
+			legend pos=north east,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002042)(2, 0.001761)(4, 0.001609)(8, 0.001346)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004184)(2, 0.003417)(4, 0.003136)(8, 0.002671)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.008108)(2, 0.006589)(4, 0.005979)(8, 0.005384)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость времени выполнения сортировки от количества процессов для массивов различного размера}
+	\label{C_seq_par_compare}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Ускорение},
+			xtick={1,2,4,8},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002042/0.002042)(2, 0.002042/0.001761)(4, 0.002042/0.001609)(8, 0.002042/0.001346)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004184/0.004184)(2, 0.004184/0.003417)(4, 0.004184/0.003136)(8, 0.004184/0.002671)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.008108/0.008108)(2, 0.008108/0.006589)(4, 0.008108/0.005979)(8, 0.008108/0.005384)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость ускорения сортировки от количества процессов для массивов различного размера}
+	\label{C_seq_par_boost}
+\end{figure}
+
+Как видно из графиков \ref{C_seq_par_compare}-\ref{C_seq_par_boost} параллельная реализация работает быстрее последовательной, а ускорение для массивов различного размера примерно одинаковое, но не превышает 1.6.
+
+Дополнительно два данных алгоритма были протестированы на суперкомпьютере Харизма (рис. \ref{C_seq_par_compare2}-\ref{C_seq_par_boost2}).
+
+\newpage
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Время выполнения, сек.},
+			xtick={1,2,4,8,16},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.001119)(2, 0.000879)(4, 0.000720)(8, 0.000626)(16, 0.006489)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002256)(2, 0.001774)(4, 0.001379)(8, 0.001252)(16, 0.002991)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004558)(2, 0.003433)(4, 0.003178)(8, 0.002465)(16, 0.002045)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость времени выполнения сортировки от количества процессов для массивов различного размера на Харизме}
+	\label{C_seq_par_compare2}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Ускорение},
+			xtick={1,2,4,8,16},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.001119/0.001119)(2, 0.001119/0.000879)(4, 0.001119/0.000720)(8, 0.001119/0.000626)(16, 0.001119/0.006489)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002256/0.002256)(2, 0.002256/0.001774)(4, 0.002256/0.001379)(8, 0.002256/0.001252)(16, 0.002256/0.002991)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004558/0.004558)(2, 0.004558/0.003433)(4, 0.004558/0.003178)(8, 0.004558/0.002465)(16, 0.004558/0.002045)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость ускорения сортировки от количества процессов для массивов различного размера на Харизме}
+	\label{C_seq_par_boost2}
+\end{figure}
+
+По графикам \ref{C_seq_par_compare2}-\ref{C_seq_par_boost2} видно, что результат аналогичен, но быстрее чем на предыдущей машине и при меньших размерах массивов с 16 потоками наблюдается ухудшение результатов по сравнению с последовательным вычислением. Также стоит заметить, что для наибольшего массива ускорение особенно заметно.
+
+\section*{Реализация на python}
+
+На питоне аналогично были реализованы последовательные (листинг \ref{QuickSortSeq.py}) и параллельные (листинги \ref{QuickSortPar1.py}-\ref{QuickSortPar2.py}) алгоритмы сортировки Хоара.
+
+Первая последовательная реализация не использует декоратор @njit, а поэтому является самой медленной и показала результат хуже чем аналогичный алгоритм на C примерно в 5 раз. Вторая и третья реализации используют декоратор @njit, но одна из них рекурсивная, а другая итерационная и использует стек и поэтому медленней и для сравнения с параллельными алгоритмами использовалась рекурсивная реализация с декоратором @njit.
+
+Одна параллельная реализация сделана при помощи библиотеки numba и декоратора @njit(parallel=True), а вторая при помощи numba.openmp. Библиотеку numba.openmp возможно использовать только на Linux подобных системах, поэтому она была установлена в docker контейнер, но в нем было доступно использование только четырех потоков. Для чистоты эксперимента, при сравнении алгоритмов на Python, все вычисления производились через docker контейнер.
+
+На графиках \ref{Python_seq_par_compare1}-\ref{Python_seq_par_boost2} представлены результаты оценки времени работы данных алгоритмов. На первых двух графиков время выполнения, а на следующих двух ускорение.
+
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Время выполнения, сек.},
+			xtick={1,2,4,8},
+			legend pos=north east,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.009748058319091797)(2, 0.007573881149291992)(4, 0.009216516017913819)
+			};
+			\addlegendentry{N = 250000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.01955103874206543)(2, 0.01593193769454956)(4, 0.019347262382507325 )
+			};
+			\addlegendentry{N = 500000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.039735116958618165)(2, 0.0320928955078125)(4, 0.037515161037445066 )
+			};
+			\addlegendentry{N = 1000000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость времени выполнения сортировки от количества процессов для массивов различного размера с использованием  numba}
+	\label{Python_seq_par_compare1}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel={Кол-во потоков},
+		ylabel={Время выполнения, сек.},
+		xtick={1,2,4,8},
+		legend pos=north west,
+		ymajorgrids=true,
+		grid style=dashed,
+		width = 400
+		]
+		
+		\addplot[
+		color=blue,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.009748058319091797)(2, 0.011055986881256103)(4, 0.010998790264129638)
+		};
+		\addlegendentry{N = 250000}
+		
+		\addplot[
+		color=green,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.01955103874206543)(2, 0.02233180046081543)(4, 0.022407388687133788)
+		};
+		\addlegendentry{N = 500000}
+		
+		\addplot[
+		color=red,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.039735116958618165)(2, 0.046410486698150635)(4, 0.04675705909729004)
+		};
+		\addlegendentry{N = 1000000}
+		
+	\end{axis}
+\end{tikzpicture}
+\caption{Зависимость времени выполнения сортировки от количества процессов для массивов различного размера с использованием  numba.openmp}
+\label{Python_seq_par_compare2}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel={Кол-во потоков},
+		ylabel={Ускорение},
+		xtick={1,2,4,8},
+		legend pos=north east,
+		ymajorgrids=true,
+		grid style=dashed,
+		width = 400
+		]
+		
+		\addplot[
+		color=blue,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.009748058319091797/0.009748058319091797)(2, 0.009748058319091797/0.007573881149291992)(4, 0.009748058319091797/0.009216516017913819)
+		};
+		\addlegendentry{N = 250000}
+		
+		\addplot[
+		color=green,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.01955103874206543/0.01955103874206543)(2, 0.01955103874206543/0.01593193769454956)(4, 0.01955103874206543/0.019347262382507325 )
+		};
+		\addlegendentry{N = 500000}
+		
+		\addplot[
+		color=red,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.039735116958618165/0.039735116958618165)(2, 0.039735116958618165/0.0320928955078125)(4, 0.039735116958618165/0.037515161037445066 )
+		};
+		\addlegendentry{N = 1000000}
+		
+	\end{axis}
+\end{tikzpicture}
+\caption{Зависимость ускорения сортировки от количества процессов для массивов различного размера с использованием  numba}
+\label{Python_seq_par_boost1}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+\begin{tikzpicture}
+	\begin{axis}[
+		xlabel={Кол-во потоков},
+		ylabel={Ускорение},
+		xtick={1,2,4,8},
+		legend pos=north west,
+		ymajorgrids=true,
+		grid style=dashed,
+		width = 400
+		]
+		
+		\addplot[
+		color=blue,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.009748058319091797/0.009748058319091797)(2, 0.009748058319091797/0.011055986881256103)(4, 0.009748058319091797/0.010998790264129638)
+		};
+		\addlegendentry{N = 250000}
+		
+		\addplot[
+		color=green,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.01955103874206543/0.01955103874206543)(2, 0.01955103874206543/0.02233180046081543)(4, 0.01955103874206543/0.022407388687133788)
+		};
+		\addlegendentry{N = 500000}
+		
+		\addplot[
+		color=red,
+		mark=square,
+		]
+		coordinates {
+			(1, 0.039735116958618165/0.039735116958618165)(2, 0.039735116958618165/0.046410486698150635)(4, 0.039735116958618165/0.04675705909729004)
+		};
+		\addlegendentry{N = 1000000}
+		
+	\end{axis}
+\end{tikzpicture}
+\caption{Зависимость ускорения сортировки от количества процессов для массивов различного размера с использованием  numba.openmp}
+\label{Python_seq_par_boost2}
+\end{figure}
+
+По графику \ref{Python_seq_par_compare1} и \ref{Python_seq_par_boost1} видно, что заметное ускорение происходит только при двух потоках. А в случае использования numba.openmp, ускорения вовсе не наблюдается, более того данная реализация показывает себя медленнее.
+
+\section*{Сравнение C и Python}
+
+Т.к. реализация на Python с использованием numba показала себя лучше, будем использовать ее для сравнения. 
+Для начала приведем графики для массивов одинакового размера (N = 100000) на обоих языках (\ref{Python_C_compare}-\ref{Python_C_boost})
+
+\newpage
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Время выполнения, сек.},
+			xtick={1,2,4,8},
+			legend pos=north east,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.008108)(2, 0.006589)(4, 0.005979)
+			};
+			\addlegendentry{C}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.0037239837646484376)(2, 0.0030921816825866697)(4, 0.0036490726470947265 )
+			};
+			\addlegendentry{Python}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость времени выполнения сортировки от количества процессов для }
+	\label{Python_C_compare}
+\end{figure}
+
+
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Ускорение},
+			xtick={1,2,4,8},
+			legend pos=north east,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.008108/0.008108)(2, 0.008108/0.006589)(4, 0.008108/0.005979)
+			};
+			\addlegendentry{C}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.0037239837646484376/0.0037239837646484376)(2, 0.0037239837646484376/0.0030921816825866697)(4, 0.0037239837646484376/0.0036490726470947265 )
+			};
+			\addlegendentry{Python}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Ускорение сортировки от количества процессов для }
+	\label{Python_C_boost}
+\end{figure}
+
+\newpage
+Из графиков \ref{Python_C_compare}-\ref{Python_C_boost} можно сделать вывод, что реализация на python быстрее из-за оптимизации numba при помощи декоратора @njit, т.к. без него алгоритм работает медленнее чем на C. Но при этом ускорение на языке C увеличивается до 8 потоков, а на Python только до 2.
+
+\section*{Выводы}
+По итогу проделанной работы были реализованы последовательные и параллельные алгоритмы сортировки Хоара на языках C и Python с использованием технологии OpenMP, а также проведено их исследование.
+
+Из экспериментов можно сделать вывод, что очень важно оптимально распараллеливать алгоритм для получения выигрыша по времени, а также большую роль в этом играет оптимизация кода. 
+
+\chapter*{Листинги}
+
+\begin{lstinputlisting}[
+	caption={Последовательный алгоритм сортировки Хоара на языке C},
+	label={QuickSortSeq.cpp},
+	style={c},
+	]{src/QuickSortSeq.cpp}
+\end{lstinputlisting}
+
+\begin{lstinputlisting}[
+caption={Параллельные алгоритмы сортировки Хоара на языке C},
+label={QuickSortPar.cpp},
+style={c},
+]{src/QuickSortPar.cpp}
+\end{lstinputlisting}
+
+\newpage
+\begin{lstinputlisting}[
+	caption={Последовательные алгоритм сортировки Хоара на языке Python},
+	label={QuickSortSeq.py},
+	style={c},
+	language={Python}
+	]{src/QuickSortSeq.py}
+\end{lstinputlisting}
+
+\newpage
+\begin{lstinputlisting}[
+caption={Параллельный алгоритм сортировки Хоара на языке Python с использованием numba},
+label={QuickSortPar1.py},
+style={c},
+language={Python}
+]{src/QuickSortPar1.py}
+\end{lstinputlisting}
+
+\newpage
+\begin{lstinputlisting}[
+caption={Параллельный алгоритм сортировки Хоара на языке Python с использованием numba.openmp},
+label={QuickSortPar2.py},
+style={c},
+language={Python}
+]{src/QuickSortPar2.py}
+\end{lstinputlisting}
 
 \end{document}
