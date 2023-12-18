@@ -34,3 +34,39 @@ print(rf_score, lgbm_score)
 CatBoostRegressor(random_seed=42, verbose=False, loss_function='MAE') - MAE = 5.651141603853965
 CPU times: user 13min 50s, sys: 8.5 s, total: 13min 58s Wall time: 5min 4s
 
+RandomForestRegressor{'max_depth': 9, 'min_samples_leaf': 3,'min_samples_split': 2, 'n_estimators': 122, 'random_state': 42} - MAE = 5.59804511651241
+CPU times: user 4h 5min 15s, sys: 12.7 s, total: 4h 5min 28s Wall time: 21min 13s
+
+LGBMRegressor{'lambda_l1': 0.4399568079000329,  'lambda_l2': 1.2680206739155033, 'learning_rate': 0.09630489565001907, 'max_bin': 80,
+              'max_depth': 9, 'min_data_in_bin': 127, 'min_data_in_leaf': 49, 'random_state': 42} - MAE = 5.581313148048434
+CPU times: user 1min 37s, sys: 120 ms, total: 1min 37s Wall time: 8.44 s
+
+rf_params = {'max_depth': 6, 'min_samples_leaf': 4, 'min_samples_split': 2, 'n_estimators': 108, 'random_state': 42}
+lgbm_params = {'lambda_l1': 0.983981994876158, 'lambda_l2': 1.462348885589403, 'learning_rate': 0.051986060592623076, 'max_bin': 33, 'max_depth': 2,
+'min_data_in_bin': 17, 'min_data_in_leaf': 53, 'random_state': 42}
+GroupKFold(n_splits=5)
+groups = X_train3[['stock_id']].values
+print(rf_score, lgbm_score)
+6.355671334575042 6.333179669469612
+6.510898519866203 6.485150195397874
+6.737161897312225 6.7199179544441385
+5.679224465859149 5.659790530077714
+6.355880620228027 6.33420715338802
+CPU times: user 9h 17min 42s, sys: 25.8 s, total: 9h 18min 7s Wall time: 1h 12min 45s
+CatBoostRegressor(random_seed=42, verbose=False, loss_function='MAE') - MAE = 5.651654177343407
+CPU times: user 13min 52s, sys: 11.6 s, total: 14min 4s Wall time: 5min 1s
+
+rf_params = {'max_depth': 9, 'min_samples_leaf': 3,'min_samples_split': 2, 'n_estimators': 122, 'random_state': 42}
+lgbm_params = {'lambda_l1': 0.4399568079000329,  'lambda_l2': 1.2680206739155033, 'learning_rate': 0.09630489565001907,
+               'max_bin': 80, 'max_depth': 9, 'min_data_in_bin': 127, 'min_data_in_leaf': 49, 'random_state': 42}
+GroupKFold(n_splits=5)
+groups = X_train3[['date_id']].values
+print(rf_score, lgbm_score)
+6.421407484294363 6.393903284615716
+6.280936476041245 6.2651092918650555
+6.2723253398379795 6.2497600294791384
+6.2689775336752165 6.25148171527511
+6.39686851817961 6.376608192332214
+CPU times: user 15h 40min 10s, sys: 28.7 s, total: 15h 40min 38s Wall time: 1h 21min 28s
+CatBoostRegressor(random_seed=42, verbose=False, loss_function='MAE') - MAE = 5.651239695567006
+CPU times: user 36min 51s, sys: 28.5 s, total: 37min 19s Wall time: 6min 15s
