@@ -5,10 +5,15 @@ srun -c 16 --time 1 ./QuickSortTest
 
 
 g++ -fopenmp -O3 -o QuickSortSeq QuickSortSeq.cpp
-srun -c 16 --time 1 ./QuickSortSeq
+srun --time 1 ./QuickSortSeq
 
 g++ -fopenmp -O3 -o QuickSortParallel QuickSortParallel.cpp
 srun -c 16 --time 1 ./QuickSortParallel
 
+srun --time 1 python QuickSortSeq.py
 
-srun -c 16 --time 1 python QuickSortSeq.py
+srun -c 16 --time 1 python QuickSortPar2.py
+
+
+module load  Python/Anaconda_v05.2022
+conda activate test

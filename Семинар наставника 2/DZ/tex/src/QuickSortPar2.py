@@ -27,12 +27,19 @@ def quickSortPar(arr, low, high, max_d, d = 0):
             j = j - 1
         pi = j
 
-        # recurcive call
         if (d < max_d):
-            with openmp("task shared(arr, low, pi, max_d, d)"):
+            with openmp("task shared(arr)"):
                 quickSortPar(arr, low, pi, max_d, d + 1)
-            with openmp("task shared(arr, pi, high, max_d, d)"):    
+            with openmp("task shared(arr)"):
                 quickSortPar(arr, pi + 1, high, max_d, d + 1)  
+            with openmp("taskwait"):
+                return
         else:
             quickSortPar(arr, low, pi, max_d, d + 1)
             quickSortPar(arr, pi + 1, high, max_d, d + 1)
+
+@njit
+def quickSortParHelp(arr, max_d):
+    with openmp("parallel shared(arr)"):
+        with openmp("single"):
+            quickSortPar(arr, 0, len(arr)-1, max_d)

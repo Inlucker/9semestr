@@ -1,0 +1,11 @@
+module load  Python/Anaconda_v05.2022
+conda create -n test python=3.9
+conda activate test
+conda install Python-for-HPC::numba Python-for-HPC::llvmlite -c conda-forge --override-channels
+
+
+module load  Python/Anaconda_v05.2022
+conda activate test
+
+
+srun -c 16 --time 1 python QuickSortPar2.py
