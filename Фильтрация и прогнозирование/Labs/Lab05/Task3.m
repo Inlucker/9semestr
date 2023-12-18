@@ -26,7 +26,7 @@ figure
 plot(dates,x); % to check reading 
 title('signal');
 
-[x2, N2, dates2] = GenMySignal(91);
+[x2, N2, dates2] = GenMySignal(110);
 
 % try to add noise with Coef*randn([1,N_signal])
 eps=9*randn(1,N2);
@@ -108,7 +108,7 @@ title('Power Spectral Dencity over periods (not frequencies)');
 
 
 %array of dates to predict
- dates_to_predict=dates(N):dt:dates(N)+0.8
+ dates_to_predict=dates(N):dt:dates(N)+20
  
 % 4)	Подобрать полиномиальную модель (можно поменять порядок)
  % remove polynomial trend
@@ -173,7 +173,7 @@ figure
 title('add all prediction together - Построить графики моделей и прогноза'); 
 
 
-[x2, N2, dates2] = GenMySignal(91);
+[x2, N2, dates2] = GenMySignal(110);
 for (i=3:1:N2)
     ar(i)=-0.7*ar(i-1)+0.2*ar(i-2)+eps(i);
 end;
