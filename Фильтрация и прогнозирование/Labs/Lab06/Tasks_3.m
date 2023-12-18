@@ -63,6 +63,7 @@ plot(freq(N_sampl*299/600:N_sampl*301/600), abs(spectr(N_sampl*299/600:N_sampl*3
 x0 = [0; 0];
 
 dots_N = 30000;
+dots_N = N_sampl;
 % With lsim
 % input_matrix = repmat(input, 2, 1);
 input_matrix = vertcat(signal+noise, signal+noise);
@@ -89,3 +90,20 @@ plot(t_sim, signal(1:dots_N), t_sim, noise(1:dots_N), 'Color', [0.7 0.7 0.7]);
 hold on
 plot(t_sim, y(:,2), 'Color', firstColor);
 hold off
+
+% Объединяем массивы в одну матрицу с указанным порядком столбцов
+data_matrix = [years_sampled', signal_noise', signal_noise', y(:, 1), y(:, 2)];
+
+% Указываем имя файла
+file_name = 'lr6_output_file.txt';
+
+% Открываем файл для записи
+fileID = fopen(file_name, 'w');
+
+% Записываем данные в файл
+fprintf(fileID, '%12.6f %12.6f %12.6f %12.6f %12.6f\n', data_matrix');
+
+% Закрываем файл
+fclose(fileID);
+
+disp(['Данные успешно записаны в файл: ' file_name]);

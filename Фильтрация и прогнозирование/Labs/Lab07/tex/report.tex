@@ -1,0 +1,87 @@
+\documentclass[a4paper,oneside,14pt]{extreport}
+
+\include{preamble}
+
+\begin{document}
+
+\include{title}
+
+\chapter*{Лабораторная работа 7}
+
+%\textbf{Задание 1}
+
+Для выполнения ЛР7 необходимо использовать выходной сигнал из ЛР6, поэтому сначала запишем его в файл, а затем считаем из новой программы и добавим незначительный шум (рис. \ref{task1_mn}-\ref{task1_mn2}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=0.9\linewidth]{inc/task1_mn}}
+	\caption{Первые 30000 точек выходного сигнала из ЛР6 с незначительным шумом}
+	\label{task1_mn}
+\end{figure}
+
+\begin{figure}[!h]
+\center{\includegraphics[width=0.9\linewidth]{inc/task1_mn2}}
+\caption{Незначительный шум поверх выходного сигнала из ЛР6}
+\label{task1_mn2}
+\end{figure}
+
+\newpage
+Выведем для него спектр и вейвлет-скейлограмму (рис. \ref{task1_spectr1}-\ref{task1_cwt1}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_spectr1}}
+	\caption{Спектральная плотность мощности 1}
+	\label{task1_spectr1}
+\end{figure}
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_cwt1}}
+	\caption{Вейвлет-скейлограмма 1}
+	\label{task1_cwt1}
+\end{figure}
+
+Как видно по графикам \ref{task1_spectr1}-\ref{task1_cwt1}, 30000 точек недостаточно чтобы уловить 8.86-летний и 18.6-летний циклы - они слились в один пик на СПМ, а на вейвлет-скейлограмме вовсе не отобразились. Поэтому попробуем взять все данные из файла за 90 лет и заново построить спектр и вейвлет-скейлограмму (рис. \ref{task1_spectr2}-\ref{task1_cwt2}):
+
+\newpage
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_spectr2}}
+	\caption{Спектральная плотность мощности 2}
+	\label{task1_spectr2}
+\end{figure}
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task1_cwt2}}
+	\caption{Вейвлет-скейлограмма 2}
+	\label{task1_cwt2}
+\end{figure}
+
+Теперь можно увидеть все гармоники на СПМ и вейвлет-скейлограмме. Следует отметить что появился новый пик на Чандлеровской частоте после ЛР6 и усилилась годовая гармоника на положительной полуоси.
+
+\newpage
+Попробуем использовать функцию ChandPantFreqFilter(), но сначала закомментируем строчку с применением фильтра Пантелеева (рис. \ref{task4}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task4}}
+	\caption{Результат ChandPantFreqFilter() без фильтра Пантелеева}
+	\label{task4}
+\end{figure}
+
+Как видно по графику \ref{task4} получившийся сигнал не похож на входной сигнал из ЛР6 даже из-за малейших шумов, поэтому вернем применение фильтра Пантелеева в функцию ChandPantFreqFilter() (рис. \ref{task5}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task5}}
+	\caption{Результат ChandPantFreqFilter() с фильтром Пантелеева}
+	\label{task5}
+\end{figure}
+
+\newpage
+Вот теперь получилось восстановить входной сигнал из ЛР6, но, очевидно, уловить все колебания изначального авторегрессионного шума невозможно.
+
+Также посмотрим на СПМ отфильтрованного сигнала (синим) в сравнении с исходным (оранжевым), чтобы убедится в правильности полученного результата (рис. \ref{task5_spectr}):
+
+\begin{figure}[!h]
+	\center{\includegraphics[width=1\linewidth]{inc/task5_spectr}}
+	\caption{СПМ отфильтрованного и изначального сигналов}
+	\label{task5_spectr}
+\end{figure}
+
+\end{document}
