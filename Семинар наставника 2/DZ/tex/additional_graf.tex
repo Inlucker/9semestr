@@ -1,0 +1,97 @@
+\documentclass[a4paper,oneside,14pt]{extreport}
+
+\include{preamble}
+
+\begin{document}
+	
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Время выполнения, сек.},
+			xtick={1,2,4,8,16},
+			legend pos=outer north east,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.001000998020172119)(2, 0.000990912914276123)(4, 0.0008235430717468262)(8, 0.0007845544815063476)(16, 0.0012778306007385253)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002106802463531494)(2, 0.0020048713684082033)(4, 0.001616342067718506)(8, 0.0013786149024963379)(16, 0.0023555827140808107)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004334142208099365)(2, 0.003974921703338623)(4, 0.0033261942863464355)(8, 0.0027632737159729004)(16, 0.0023488984107971193)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость времени выполнения сортировок на Python от количества процессов для массивов различного размера на Харизме}
+	\label{Python_compare}
+\end{figure}
+
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Ускорение},
+			xtick={1,2,4,8,16},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.001000998020172119/0.001000998020172119)(2, 0.001000998020172119/0.000990912914276123)(4, 0.001000998020172119/0.0008235430717468262)(8, 0.001000998020172119/0.0007845544815063476)(16, 0.001000998020172119/0.0012778306007385253)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002106802463531494/0.002106802463531494)(2, 0.002106802463531494/0.0020048713684082033)(4, 0.002106802463531494/0.001616342067718506)(8, 0.002106802463531494/0.0013786149024963379)(16, 0.002106802463531494/0.0023555827140808107)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004334142208099365/0.004334142208099365)(2, 0.004334142208099365/0.003974921703338623)(4, 0.004334142208099365/0.0033261942863464355)(8, 0.004334142208099365/0.0027632737159729004)(16, 0.004334142208099365/0.0023488984107971193)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Ускорение сортировок на Python от количества процессов для массивов различного размер на Харизме}
+	\label{Python_boost}
+\end{figure}
+
+\end{document}

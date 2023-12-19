@@ -1,0 +1,2 @@
+docker pull ghcr.io/ggeorgakoudis/pyomp-jupyter-amd64:latest
+docker run -t -p 8888:8888 ghcr.io/ggeorgakoudis/pyomp-jupyter-amd64
