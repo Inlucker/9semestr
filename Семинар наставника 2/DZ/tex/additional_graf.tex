@@ -49,6 +49,7 @@
 	\label{Python_compare}
 \end{figure}
 
+\newpage
 \begin{figure}[!h]
 	\begin{tikzpicture}
 		\begin{axis}[
@@ -93,5 +94,101 @@
 	\caption{Ускорение сортировок на Python от количества процессов для массивов различного размер на Харизме}
 	\label{Python_boost}
 \end{figure}
+
+\newpage
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Время выполнения, сек.},
+			xtick={1,2,4,8,16},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.001119)(2, 0.000879)(4, 0.000720)(8, 0.000626)(16, 0.006489)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002256)(2, 0.001774)(4, 0.001379)(8, 0.001252)(16, 0.002991)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004558)(2, 0.003433)(4, 0.003178)(8, 0.002465)(16, 0.002045)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость времени выполнения сортировки на C от количества процессов для массивов различного размера на Харизме}
+	\label{C_seq_par_compare2}
+\end{figure}
+
+\newpage
+\begin{figure}[!h]
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel={Кол-во потоков},
+			ylabel={Ускорение},
+			xtick={1,2,4,8,16},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+			width = 400
+			]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.001119/0.001119)(2, 0.001119/0.000879)(4, 0.001119/0.000720)(8, 0.001119/0.000626)(16, 0.001119/0.006489)
+			};
+			\addlegendentry{N = 25000}
+			
+			\addplot[
+			color=green,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.002256/0.002256)(2, 0.002256/0.001774)(4, 0.002256/0.001379)(8, 0.002256/0.001252)(16, 0.002256/0.002991)
+			};
+			\addlegendentry{N = 50000}
+			
+			\addplot[
+			color=red,
+			mark=square,
+			]
+			coordinates {
+				(1, 0.004558/0.004558)(2, 0.004558/0.003433)(4, 0.004558/0.003178)(8, 0.004558/0.002465)(16, 0.004558/0.002045)
+			};
+			\addlegendentry{N = 100000}
+			
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Зависимость ускорения сортировки на C от количества процессов для массивов различного размера на Харизме}
+	\label{C_seq_par_boost2}
+\end{figure}
+
+\subsection*{Вывод}
+
+Как видно по графикам \ref{Python_compare}-\ref{C_seq_par_boost2}, реализация на Python показала себя аналогично реализации на C при запуске маленьких массивов (25000 и 50000) на Харизме - при использовании 16 потоков ускорение начинает падать, но при использовании массивов размера N = 100000 ускорение все еще возрастает.
 
 \end{document}
